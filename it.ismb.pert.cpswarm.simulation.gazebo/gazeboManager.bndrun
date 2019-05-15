@@ -75,7 +75,6 @@
 	com.google.gson.bundle;version=2.8.5,\
 	gson-extras-bundle;version=2.8.5,\
 	optimization-messages;version=0.0.1,\
-	coppelia;version=latest,\
 	be.iminds.iot.simulator.api;version=latest,\
 	be.iminds.iot.simulator.gazebo;version=latest,\
 	org.ros.rosjava_messages.gazebo_msgs;version=latest,\
