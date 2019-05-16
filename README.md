@@ -49,7 +49,7 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
    It is a configuration file can be used to change some system parameters which are used by the Gazebo simulation manager to communicate with other components in the software. 
 
    Here is the default values, set the values to be used in the real use case
-``` xml
+   ``` xml
 <settings>
   <uuid>22e6dbf2-ca2f-437f-8397-49daada26042</uuid> <!-- If present, indicates the UUID to be used in the JID (it is useful to have fixed JIDs) -->
   <serverURI>123.123.123.123</serverURI>  <!-- URI of the XMPP server  -->
@@ -66,17 +66,18 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
   <timeout>90000</timeout> <!-- Timeout in milliseconds for one simulation -->
   <fake>false</fake> <!-- Indicate if real simulations need to be done or not -->
 </settings>
-```
+   ```
 
 ## Run
 
 
-*  Run the `gazeboManager.bndrun` in the project folder from terminal
-``` bash
+*  Way1: Run the `gazeboManager.bndrun` in the project folder from terminal
+   ``` bash
 $ bnd package gazeboManger.bndrun
 $ java -jar gazeboManager.jar
-```
-*  Run the `gazeboManager.bndrun` in Eclipse
+   ```
+*  Way2: Run the `gazeboManager.bndrun` in Eclipse
+
    Run as -> Bnd OSGi Run Launcher
    or you can click the `Run OSGI` buntton in the right-top corner from `Run` tab of this bndrun file
 
