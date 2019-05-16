@@ -50,22 +50,22 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 
    Here is the default values, set the values to be used in the real use case
    ``` xml
-<settings>
-  <uuid>22e6dbf2-ca2f-437f-8397-49daada26042</uuid> <!-- If present, indicates the UUID to be used in the JID (it is useful to have fixed JIDs) -->
-  <serverURI>123.123.123.123</serverURI>  <!-- URI of the XMPP server  -->
-  <serverName>pippo.pluto.it</serverName>  <!-- name of the XMPP server  -->
-  <serverPassword>server</serverPassword>  <!-- Password to be used to connect to the XMPP server -->
-  <dataFolder>/home/cpswarm/Desktop/output/</dataFolder> <!-- Data folder where to store the data -->
-  <dimensions>3</dimensions> <!-- dimensions supported by the wrapped simulator -->
-  <maxAgents>8</maxAgents> <!-- max agents supported by the wrapped simulator -->
-  <optimizationUser>frevo</optimizationUser> <!-- XMPP user of the optimization tool -->
-  <orchestratorUser>orchestrator</orchestratorUser> <!-- XMPP user of the orchestrator -->
-  <rosFolder>/home/cpswarm/Desktop/test/src/</rosFolder> <!-- folder of the ROS workspace, it must be the <src> folder -->
-  <monitoring>true</monitoring> <!--  indication if the monitoring GUI has to be used or not  -->
-  <mqttBroker>tcp://123.123.123.123:1883</mqttBroker> <!--  MQTT broker to be used if the monitoring is set to true  -->
-  <timeout>90000</timeout> <!-- Timeout in milliseconds for one simulation -->
-  <fake>false</fake> <!-- Indicate if real simulations need to be done or not -->
-</settings>
+   <settings>
+   <uuid>22e6dbf2-ca2f-437f-8397-49daada26042</uuid> <!-- If present, indicates the UUID to be used in the JID (it is useful to have fixed JIDs) -->
+   <serverURI>123.123.123.123</serverURI>  <!-- URI of the XMPP server  -->
+   <serverName>pippo.pluto.it</serverName>  <!-- name of the XMPP server  -->
+   <serverPassword>server</serverPassword>  <!-- Password to be used to connect to the XMPP server -->
+   <dataFolder>/home/cpswarm/Desktop/output/</dataFolder> <!-- Data folder where to store the data -->
+   <dimensions>3</dimensions> <!-- dimensions supported by the wrapped simulator -->
+   <maxAgents>8</maxAgents> <!-- max agents supported by the wrapped simulator -->
+   <optimizationUser>frevo</optimizationUser> <!-- XMPP user of the optimization tool -->
+   <orchestratorUser>orchestrator</orchestratorUser> <!-- XMPP user of the orchestrator -->
+   <rosFolder>/home/cpswarm/Desktop/test/src/</rosFolder> <!-- folder of the ROS workspace, it must be the <src> folder -->
+   <monitoring>true</monitoring> <!--  indication if the monitoring GUI has to be used or not  -->
+   <mqttBroker>tcp://123.123.123.123:1883</mqttBroker> <!--  MQTT broker to be used if the monitoring is set to true  -->
+   <timeout>90000</timeout> <!-- Timeout in milliseconds for one simulation -->
+   <fake>false</fake> <!-- Indicate if real simulations need to be done or not -->
+   </settings>
    ```
 
 ## Run
@@ -73,8 +73,8 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 
 *  Way1: Run the `gazeboManager.bndrun` in the project folder from terminal
    ``` bash
-$ bnd package gazeboManger.bndrun
-$ java -jar gazeboManager.jar
+   $ bnd package gazeboManger.bndrun
+   $ java -jar gazeboManager.jar
    ```
 *  Way2: Run the `gazeboManager.bndrun` in Eclipse
 
