@@ -26,6 +26,8 @@ In Eclipse: Window-> Show View-> Other-> Bndtools-> Repositories.
 >Note: the `cnf` project is a fixed name in the source code of Bnd IDE, it makes a directory a workspace with some built-in plugins and external plugins, just like the .git directory does for git. So don't change its name.\
 >So when you want to import the second bnd repository which also contains a cnf project, you must manually clone&import the other projects with the option `Copy projects into workspace` is checked, because only one `cnf` project is allowed in a workspace
 
+Click [`here`](https://bnd.bndtools.org/chapters/123-tour-workspace.html) to see the official guid page of cnf and bnd workspce.
+
 ## Configuration
 
 Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
