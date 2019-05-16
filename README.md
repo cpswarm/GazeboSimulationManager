@@ -20,8 +20,10 @@ Help-> Eclipse Markerplace-> search 'Bndtools'-> Installed->Restart Eclipse.
 ## Installation
 
 You can directly import all sub-projects in this repository by using the option `Paste Repository Path or URI` from the Git Repositories View in Eclipse.
-
->Note: the `cnf` project is a fixed name in the source code of Bnd IDE, it makes a directory a workspace, just like the .git directory does for git. So don't change its name.\
+```bash
+In Eclipse: Window-> Show View-> Other-> Bndtools-> Repositories.
+```
+>Note: the `cnf` project is a fixed name in the source code of Bnd IDE, it makes a directory a workspace with some built-in plugins and external plugins, just like the .git directory does for git. So don't change its name.\
 >So when you want to import the second bnd repository which also contains a cnf project, you must manually clone&import the other projects with the option `Copy projects into workspace` is checked, because only one `cnf` project is allowed in a workspace
 
 ## Configuration
@@ -83,5 +85,19 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
    or you can click the `Run OSGI` buntton in the right-top corner from `Run` tab of this bndrun file
 
 ## Dependency Bundles Updation
+
+Usually the bundle verion is defined by the `Bundle-Version:` instruction in the bnd.bnd file for each project. when you modify something of a bundle in Eclipse, the Bndtool IDE will autocatically update the bundle jar in the `generated` folder. Double click the generated bundle, you can see its version and some other infomation.
+
+When a project refers to the other project in the same workspace, the jar to be refered are the ones in the generated folder of each project, the version of the refered jar in the `-buildpath:` instruction in bnd.bnd file is usually equal to `latest` if you add this bundle from the `build` tab. but you can also set the version equal to the real value from `source` tab. Anyway, Bndtool will hundle any other things for you.
+
+As we said before, the `cnf` project has some build-in plugins and external plugins, they provides lots of available bundles. we can manually add and update the provided bundles
+
+***steps:***
+*  Copy the new version of a jar into any place in Eclipse;
+*  Drag and drop this jar to Local repository of the `cnf` project from the `Repositories` view in Eclipse to overwrite the old jar;
+*  Extend the Local repository, if the version is different with the old one, you can see multiple versions of the jar;
+*  In case there are multiple versions, you should modify the version of this new jar in the bnd.bnd file for each project which refers this dependency bundle, and the .bndrun file 
+
+In a conclusion, if in the same workspace, just need to change the source of the refered project, Bndtool will detect where is the latest version. If subdeviding the workspace, you need to drag the new jar in local repository in the bnd Repositories View, and if the version is different, also change the version in the bnd.bnd for each project.
 
 
