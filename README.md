@@ -79,6 +79,7 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 *  Way2: Run the `gazeboManager.bndrun` in Eclipse
 
    Run as -> Bnd OSGi Run Launcher
+   
    or you can click the `Run OSGI` buntton in the right-top corner from `Run` tab of this bndrun file
 
 
