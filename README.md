@@ -1,6 +1,6 @@
 ## GazeboManagerBundle
 
-This repository contains the OSGI bundles only for creating Gazebo simulation manager, the necessary dependency bundles from the [`CPswarm-common`](https://git.pertforge.ismb.it/rzhao/cpswarm-common) repository are added in the `local` repository of this `cnf` project which sets up the bnd workspace
+This repository contains the OSGI bundles only for creating Gazebo simulation manager, the necessary dependency bundles from the [`CPswarm-common`](https://git.pertforge.ismb.it/rzhao/cpswarm-common) repository have been adding in the `local` repository of this `cnf` project which sets up the bnd workspace.
 
 ## Setup
 Install Ros system and set up the Ros environment variable `ROS_MASTER_URI=http://localhost:11311` by default in order to set up your local machine as a ROS master.
@@ -50,7 +50,7 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
     ```  
 *  **resources/manager.xml**
 
-   It is a configuration file can be used to change some system parameters which are used by the Gazebo simulation manager to communicate with other components in the software. 
+   It is a configuration file can be used to change some system parameters used by the Gazebo simulation manager to communicate with other components in the software. 
 
    Here is the default values, set the values to be used in the real use case
    ``` xml
