@@ -90,13 +90,12 @@
 	org.apache.felix.log.storeDebug=false,\
 	org.osgi.service.http.port=8080,\
 	ros.core.native=true,\
-	gazebo.launch=true,\
+	gazebo.launch=false,\
 	CpswarmSimulation.launch=false,\
 	ros.master.uri=http://localhost:11311,\
 	Manager.config.file.manager.xml=resources/manager.xml,\
 	javax.net.ssl.trustStorePassword=changeit,\
-	javax.net.ssl.trustStore=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/lib/security/cacerts,\
-	org.osgi.framework.trust.repositories=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/lib/security/cacerts
+	javax.net.ssl.trustStore=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/lib/security/cacerts
 
 
 
