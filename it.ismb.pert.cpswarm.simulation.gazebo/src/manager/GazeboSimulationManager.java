@@ -48,9 +48,7 @@ public class GazeboSimulationManager extends SimulationManager {
 
 	@Activate
 	public void activate(BundleContext context) {
-		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-			System.out.println("Instantiate a GazeboSimulationManager .....");
-		}			
+					
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
 		InetAddress serverURI = null;
@@ -78,6 +76,10 @@ public class GazeboSimulationManager extends SimulationManager {
 			} else {
 				CURRENT_VERBOSITY_LEVEL = VERBOSITY_LEVELS.values()[verbosityI];
 			}
+			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+				System.out.println("Instantiate a GazeboSimulationManager .....");
+			}
+			
 			documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			String managerConfigFile = context.getProperty("Manager.config.file.manager.xml");
 			Document document = null;
@@ -135,7 +137,7 @@ public class GazeboSimulationManager extends SimulationManager {
 			e.printStackTrace();
 		}
 		connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
-				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, CURRENT_VERBOSITY_LEVEL);
+				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE);
 		publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
 		while (true) {
