@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import messages.server.Capabilities;
 import messages.server.Server;
 import simulation.SimulationManager;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
@@ -49,7 +48,9 @@ public class GazeboSimulationManager extends SimulationManager {
 
 	@Activate
 	public void activate(BundleContext context) {
-		System.out.println("Instantiate a GazeboSimulationManager .....");
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println("Instantiate a GazeboSimulationManager .....");
+		}			
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder;
 		InetAddress serverURI = null;
@@ -64,10 +65,19 @@ public class GazeboSimulationManager extends SimulationManager {
 		boolean debug = false;
 		boolean monitoring = false;
 		String mqttBroker = "";
-		boolean fake = false;
+		String verbosity = "2";
 
 		Server serverInfo = new Server();
 		try {
+			if(context.getProperty("verbosity")!=null){
+				verbosity = context.getProperty("verbosity");
+			}
+			int verbosityI = Integer.parseInt(verbosity);
+			if(verbosityI>2) {
+				System.out.println("Invalid verbosity level, using the default one: ALL");
+			} else {
+				CURRENT_VERBOSITY_LEVEL = VERBOSITY_LEVELS.values()[verbosityI];
+			}
 			documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			String managerConfigFile = context.getProperty("Manager.config.file.manager.xml");
 			Document document = null;
@@ -88,8 +98,8 @@ public class GazeboSimulationManager extends SimulationManager {
 			if (document.getElementsByTagName("timeout").getLength() != 0) {
 				timeout = Integer.parseInt(document.getElementsByTagName("timeout").item(0).getTextContent());
 			}
-			if (document.getElementsByTagName("fake").getLength() != 0) {
-				fake = Boolean.parseBoolean(document.getElementsByTagName("fake").item(0).getTextContent());
+			if (document.getElementsByTagName("debug").getLength() != 0) {
+				debug = Boolean.parseBoolean(document.getElementsByTagName("debug").item(0).getTextContent());
 			}
 			Capabilities capabilities = new Capabilities();
 			capabilities
@@ -125,7 +135,7 @@ public class GazeboSimulationManager extends SimulationManager {
 			e.printStackTrace();
 		}
 		connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
-				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, fake);
+				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, CURRENT_VERBOSITY_LEVEL);
 		publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
 		while (true) {
@@ -152,8 +162,11 @@ public class GazeboSimulationManager extends SimulationManager {
 		disco.addFeature("http://jabber.org/protocol/si/profile/file-transfer");
 		final Presence presence = new Presence(Presence.Type.available);
 		Gson gson = new Gson();
-		System.out.println(" \n MA : the server info is " + gson.toJson(serverInfo, Server.class));
-		presence.setStatus(gson.toJson(serverInfo, Server.class));
+		String statusToSend = gson.toJson(serverInfo, Server.class);
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println(" \n MA : the server info is " + statusToSend);
+		}		
+		presence.setStatus(gson.toJson(statusToSend));
 		try {
 			this.getConnection().sendStanza(presence);
 		} catch (final NotConnectedException | InterruptedException e) {
@@ -172,7 +185,9 @@ public class GazeboSimulationManager extends SimulationManager {
 			coordinatorInstance.dispose();
 		if (fileTransferListenerInstace != null)
 			fileTransferListenerInstace.dispose();
-		System.out.println(" \n stoping Gazebo simulation manager \n");
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println(" \n stoping Gazebo simulation manager \n");
+		}		
 	}
 
 }

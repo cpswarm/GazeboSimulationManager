@@ -7,6 +7,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
+import simulation.SimulationManager;
+
 /**
  * A Runnable class used to launch the script that allow resetting the map of
  * the simulation
@@ -21,7 +23,6 @@ public class ScriptLauncher implements Runnable {
 
 	@Activate
 	public void activate(BundleContext context, Map<String, Object> properties) throws Exception {
-		System.out.println(" Instantiate a Script Launcher ");
 		for (Entry<String, Object> entry : properties.entrySet()) {
 			String key = entry.getKey();
 			if (key.equals("rosWorkspace")) {
@@ -46,7 +47,9 @@ public class ScriptLauncher implements Runnable {
 
 	@Deactivate
 	void deactivate() {
-		System.out.println("Simulation launcher is deactived");
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println("Simulation launcher is deactived");
+		}
 		if (proc != null) {
 			proc.destroy();
 			proc = null;

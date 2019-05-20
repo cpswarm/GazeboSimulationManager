@@ -32,8 +32,6 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 	@Activate
 	protected void activate(Map<String, Object> properties) throws Exception {
-
-		System.out.println(" Instantiate a gazebo MessageEventCoordinatorImpl");
 		for (Entry<String, Object> entry : properties.entrySet()) {
 			String key = entry.getKey();
 			if (key.equals("SimulationManager")) {
@@ -47,6 +45,9 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 		}
 		assert (parent) != null;
 		if (parent != null) {
+			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+				System.out.println(" Instantiate a gazebo MessageEventCoordinatorImpl");
+			}
 			setSimulationManager(parent);
 		}
 	}
@@ -65,8 +66,6 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 	@Override
 	protected void handleCandidate(final EntityBareJid sender, final String candidate) {
-		System.out.println(" MA MessageEventCoordinatorImpl calls  to handleCandidate()  sender = " + sender);
-
 		try {
 			packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
 			packageFolder = parent.getRosFolder() + packageName;
@@ -81,8 +80,9 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
 					return;
 				}
-				System.out.println("Compiling the package, using the 'catkin build' service provided by the RosCommand factory component ");
+				System.out.println("handling candidate:"+ /*candidate +*/" , for Task ID: "+parent.getOptimizationID());
 				if (!candidate.isEmpty()) {
+					System.out.println("Compiling the package "+packageName);
 					String catkinWS = parent.getCatkinWS();
 					Properties props = new Properties();
 					props.put("ros.buildWorkspace", catkinWS);
@@ -104,13 +104,11 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 					if (result) {
 						runSimulation(true);
-						System.out.println("done");
 					} else {
 						System.out.println("Error");
 						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(),
 								"Error calculating fitness score", ReplyMessage.Status.ERROR, parent.getSimulationID(),
 								BAD_FITNESS));
-						return;
 					}
 				}
 			} else {
@@ -127,14 +125,11 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				runSimulation(false);
 			}
 		} catch (IOException | InterruptedException e) {
-			parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(),
-					"Error handling the candidate", ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
+			e.printStackTrace();
 		}
 	}
 
 	private void runSimulation(boolean calcFitness) throws IOException, InterruptedException {
-		System.out.println("\n MessageEventCoordinator is starting to launch the simulation \n");
-
 		Properties props = new Properties();
 		props.put("rosWorkspace", parent.getCatkinWS());
 
@@ -168,8 +163,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 		ComponentInstance commandInstance = null;
 		try {
 			try {
-				System.out.println("Launching the simulation for package: " + packageName + " with params: "
-						+ parent.getSimulationConfiguration());
+				System.out.println("Launching the simulation for package: " + packageName + " with params: "+ parent.getSimulationConfiguration());
 				// roslaunch emergency_exit gazebo.launch visual:=true
 				Properties props = new Properties();
 				props.put("rosWorkspace", parent.getCatkinWS());
@@ -192,7 +186,9 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 	@Deactivate
 	public void deactivate() {
-		System.out.println(" MessageEventCoordinator is deactived ");
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println(" MessageEventCoordinator is deactived ");
+		}
 		Process proc;
 		try {
 			proc = Runtime.getRuntime().exec("killall " + packageName);
