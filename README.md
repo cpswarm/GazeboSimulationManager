@@ -97,7 +97,7 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
    or you can click the `Run OSGI` button in the right-top corner from `Run` tab of this bndrun file
 *  ***Way3:*** Export the bndrun file as excutable jar in Eclipse
 
-   Click the `Export` button in the right-top corner from `Run` tab of this bndrun file,
+   Click the `Export` button in the stageManager.bndrun file -> Select Export Destination which should be in the same folder with this bndrun file, because the excutable jar has to access to the `Resources/Manager.xml` configuration file. 
    
    Run the exported jar in it's folder:
    ``` bash
