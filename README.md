@@ -85,7 +85,7 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 ## Run
 
 
-*  ***Way1:*** Run the `gazeboManager.bndrun` in the project folder from terminal
+*  ***Way1:*** Run the `gazeboManager.bndrun` in the project folder from terminal, maybe with the -D option
    ``` bash
    $ bnd package gazeboManger.bndrun
    $ java -jar gazeboManager.jar
