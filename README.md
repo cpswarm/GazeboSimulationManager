@@ -85,17 +85,17 @@ Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 ## Run
 
 
-*  ***Way1***: Run the `gazeboManager.bndrun` in the project folder from terminal
+*  ***Way1:*** Run the `gazeboManager.bndrun` in the project folder from terminal
    ``` bash
    $ bnd package gazeboManger.bndrun
    $ java -jar gazeboManager.jar
    ```
-*  ***Way2***: Run the `gazeboManager.bndrun` in Eclipse
+*  ***Way2:*** Run the `gazeboManager.bndrun` in Eclipse
 
    Run as -> Bnd OSGi Run Launcher
    
    or you can click the `Run OSGI` button in the right-top corner from `Run` tab of this bndrun file
-*  ***Way3***: Export the bndrun file as excutable jar in Eclipse
+*  ***Way3:*** Export the bndrun file as excutable jar in Eclipse
 
    Click the `Export` button in the right-top corner from `Run` tab of this bndrun file,
    
