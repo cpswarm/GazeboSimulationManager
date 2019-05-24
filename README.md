@@ -34,7 +34,7 @@ Click [`here`](https://bnd.bndtools.org/chapters/123-tour-workspace.html) to see
 
 Go to project `it.ismb.pert.cpswarm.simulation.gazebo`
 *  **gazeboManager.bndrun**   
-   There is a run descriptor file `gazeboManager.bndrun` with the following `-runproperties:` instruction for configuring the launching environment:
+   it is a run descriptor file `gazeboManager.bndrun` which descrips the needed Felix and all dependency bundles to launch the gazebo manager and with the following `-runproperties:` instruction inside for configuring the launching environment:
 
    To set individual System properties with the `-D` option to pass the command line parameters to override the properties listed in the `-runproperties:` when running the manager,
 
