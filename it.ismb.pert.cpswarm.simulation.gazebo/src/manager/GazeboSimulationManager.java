@@ -168,7 +168,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
 			System.out.println(" \n MA : the server info is " + statusToSend);
 		}		
-		presence.setStatus(gson.toJson(statusToSend));
+		presence.setStatus(statusToSend);
 		try {
 			this.getConnection().sendStanza(presence);
 		} catch (final NotConnectedException | InterruptedException e) {

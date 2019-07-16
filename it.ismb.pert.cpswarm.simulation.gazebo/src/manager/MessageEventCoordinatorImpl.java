@@ -7,6 +7,9 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
+
+import org.jivesoftware.smack.chat2.Chat;
+import org.jivesoftware.smack.chat2.ChatManager;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.osgi.service.component.ComponentFactory;
@@ -16,8 +19,10 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import be.iminds.iot.ros.util.RosCommand;
+import eu.cpswarm.optimization.messages.MessageSerializer;
 import eu.cpswarm.optimization.messages.ReplyMessage;
 import eu.cpswarm.optimization.messages.SimulationResultMessage;
+import eu.cpswarm.optimization.messages.SimulatorConfiguredMessage;
 import simulation.xmpp.AbstractMessageEventCoordinator;
 import simulation.SimulationManager;
 
@@ -27,7 +32,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 	private String packageName = null;
 	private SimulationManager parent = null;
-	private ComponentFactory simulationLauncherFactory;
+	private ComponentFactory scriptLauncherFactory;
 	private ComponentFactory rosCommandFactory; // used to catkin build the workspace
 
 	@Activate
@@ -53,8 +58,8 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	}
 
 	@Reference(target = "(component.factory=it.ismb.pert.cpswarm.scriptLauncher.factory)")
-	public void getSimulationLauncherFactory(final ComponentFactory s) {
-		this.simulationLauncherFactory = s;
+	public void getScriptLauncherFactory(final ComponentFactory s) {
+		this.scriptLauncherFactory = s;
 
 	}
 
@@ -65,9 +70,10 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	}
 
 	@Override
-	protected void handleCandidate(final EntityBareJid sender, final String candidate) {
+	protected void handleCandidate(final EntityBareJid sender, final String candidate, final String candidateType) {
 		try {
-			packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
+	//		packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
+			packageName = parent.getSCID();
 			packageFolder = parent.getRosFolder() + packageName;
 			if (sender.equals(JidCreate.entityBareFrom(parent.getOptimizationJID()))) {
 				if (candidate.equals("test")) {
@@ -76,11 +82,12 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				}
 				if (!serializeCandidate(candidate)) {
 					parent.publishFitness(
-							new SimulationResultMessage(parent.getOptimizationID(), "Error serializing the candidate",
-									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
+							new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS));
 					return;
 				}
-				System.out.println("handling candidate:"+ /*candidate +*/" , for Task ID: "+parent.getOptimizationID());
+				if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+					System.out.println("handling candidate: ...."+ /*candidate +*/" , for SCID: "+parent.getSCID());
+				}
 				if (!candidate.isEmpty()) {
 					System.out.println("Compiling the package "+packageName);
 					String catkinWS = parent.getCatkinWS();
@@ -106,20 +113,29 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 						runSimulation(true);
 					} else {
 						System.out.println("Error");
-						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(),
-								"Error calculating fitness score", ReplyMessage.Status.ERROR, parent.getSimulationID(),
+						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(),
 								BAD_FITNESS));
 					}
 				}
-			} else {
+			} else { // SOO
 				if (candidate.equals("test")) {
 					parent.setTestResult("simulation");
 					return;
 				}
-				if (!serializeCandidate(candidate)) {
-					parent.publishFitness(
-							new SimulationResultMessage(parent.getOptimizationID(), "Error serializing the candidate",
-									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
+				if (!serializeCandidate(candidate)) {    /* why sent to OT ?  */
+				/*	parent.publishFitness(
+							new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS)); 
+				*/	
+					try {
+						final ChatManager chatmanager = ChatManager.getInstanceFor(parent.getConnection());
+						final Chat newChat = chatmanager.chatWith(parent.getOrchestratorJID().asEntityBareJidIfPossible());
+						SimulationResultMessage reply = new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS);
+						MessageSerializer serializer = new MessageSerializer();
+						newChat.send(serializer.toJson(reply));						
+					} catch(final Exception e) {
+						e.printStackTrace();
+					}
+					
 					return;
 				}
 				runSimulation(false);
@@ -132,8 +148,8 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	private void runSimulation(boolean calcFitness) throws IOException, InterruptedException {
 		Properties props = new Properties();
 		props.put("rosWorkspace", parent.getCatkinWS());
-
-		ComponentInstance instance = this.simulationLauncherFactory.newInstance((Dictionary) props);
+				
+		ComponentInstance instance = this.scriptLauncherFactory.newInstance((Dictionary) props);
 		ScriptLauncher script = (ScriptLauncher) instance.getInstance();
 		try {
 			final Thread thread = new Thread(script);
@@ -152,9 +168,8 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (calcFitness) {
-			parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(), "fitness score",
-					ReplyMessage.Status.OK, parent.getSimulationID(), 1.0));
+		if (calcFitness) {   // if true, publish calculated fitness to OT, so a claculator is needed, if false, no need calculation, do nothing,    ( or send calculated result/1.0 to SOO , NO!)
+			parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(), true, parent.getSimulationID(), 1.0));
 		}
 
 	}
@@ -172,6 +187,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				props.put("ros.mappings", parent.getSimulationConfiguration());
 				commandInstance = this.rosCommandFactory.newInstance((Dictionary) props);
 				RosCommand roslaunch = (RosCommand) commandInstance.getInstance();
+				System.out.println("Launching finished");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

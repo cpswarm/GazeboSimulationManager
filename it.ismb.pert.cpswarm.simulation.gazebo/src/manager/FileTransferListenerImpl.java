@@ -18,10 +18,6 @@ import simulation.SimulationManager;
 //factory component for creating instance per requestor
 @Component(factory = "it.ismb.pert.cpswarm.gazeboFileTransferListenerImpl.factory")
 public class FileTransferListenerImpl extends AbstractFileTransferListener {
-
-	protected SimulationManager parent = null;
-	protected String dataFolder = null;
-	protected String rosFolder = null;
 	
 	@Activate
 	protected void activate(Map<String, Object> properties) throws Exception {
@@ -67,6 +63,7 @@ public class FileTransferListenerImpl extends AbstractFileTransferListener {
 				} else {
 					newFile = new File(dataFolder + fileName);
 				}
+				System.out.println("\n new file is = "+ newFile+"\n");
 				FileOutputStream fos = new FileOutputStream(newFile);
 				int len;
 				while ((len = zis.read(buffer)) > 0) {
