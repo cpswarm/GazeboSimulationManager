@@ -72,7 +72,6 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	@Override
 	protected void handleCandidate(final EntityBareJid sender, final String candidate, final String candidateType) {
 		try {
-	//		packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
 			packageName = parent.getSCID();
 			packageFolder = parent.getRosFolder() + packageName;
 			if (sender.equals(JidCreate.entityBareFrom(parent.getOptimizationJID()))) {
@@ -177,21 +176,16 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	public void launchSimulation() {
 		ComponentInstance commandInstance = null;
 		try {
-			try {
-				System.out.println("Launching the simulation for package: " + packageName + " with params: "+ parent.getSimulationConfiguration());
-				// roslaunch emergency_exit gazebo.launch visual:=true
-				Properties props = new Properties();
-				props.put("rosWorkspace", parent.getCatkinWS());
-				props.put("ros.package", packageName);
-				props.put("ros.node", "gazebo.launch");
-				props.put("ros.mappings", parent.getSimulationConfiguration());
-				commandInstance = this.rosCommandFactory.newInstance((Dictionary) props);
-				RosCommand roslaunch = (RosCommand) commandInstance.getInstance();
-				System.out.println("Launching finished");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+			System.out.println("Launching the simulation for package: " + packageName + " with params: "
+					+ parent.getSimulationConfiguration());
+			// roslaunch emergency_exit gazebo.launch visual:=true
+			Properties props = new Properties();
+			props.put("rosWorkspace", parent.getCatkinWS());
+			props.put("ros.package", packageName);
+			props.put("ros.node", "gazebo.launch");
+			props.put("ros.mappings", parent.getSimulationConfiguration());
+			commandInstance = this.rosCommandFactory.newInstance((Dictionary) props);
+			RosCommand roslaunch = (RosCommand) commandInstance.getInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
