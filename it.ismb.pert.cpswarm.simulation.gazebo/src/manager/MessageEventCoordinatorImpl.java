@@ -109,11 +109,17 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 					System.out.println("Compilation finished, " + result);
 
 					if (result) {
+						if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+							System.out.println("Compilation finished, success = "+result);
+						}
 						runSimulation(true);
+						if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+							System.out.println("simulation "+this.parent.getSimulationID()+" done");
+						}
 					} else {
-						System.out.println("Error");
+						System.out.println("Compilation with error, success = "+result);
 						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(),
-								BAD_FITNESS));
+								BAD_FITNESS));  // ? publish or not
 					}
 				}
 			} else { // sender is SOO for a single simulation  
@@ -121,20 +127,18 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 					parent.setTestResult("simulation");
 					return;
 				}
-				if (!serializeCandidate(candidate)) {    /* why sent to OT ?  */
-				/*	parent.publishFitness(
-							new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS)); 
-				*/	
-					try {  //send error result to SOO
-						final ChatManager chatmanager = ChatManager.getInstanceFor(parent.getConnection());
-						final Chat newChat = chatmanager.chatWith(parent.getOrchestratorJID().asEntityBareJidIfPossible());
-						SimulationResultMessage reply = new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS);
-						MessageSerializer serializer = new MessageSerializer();
-						newChat.send(serializer.toJson(reply));						
-					} catch(final Exception e) {
-						e.printStackTrace();
+				if (!serializeCandidate(candidate)) {
+					if (parent.isOrchestratorAvailable()) {
+						try { // send error result to SOO
+							final ChatManager chatmanager = ChatManager.getInstanceFor(parent.getConnection());
+							final Chat newChat = chatmanager.chatWith(parent.getOrchestratorJID().asEntityBareJidIfPossible());
+							SimulationResultMessage reply = new SimulationResultMessage(parent.getOptimizationID(), false, parent.getSimulationID(), BAD_FITNESS);
+							MessageSerializer serializer = new MessageSerializer();
+							newChat.send(serializer.toJson(reply));
+						} catch (final Exception e) {
+							e.printStackTrace();
+						}
 					}
-					
 					return;
 				}
 				runSimulation(false);  // TODO, ? for a single simulation, no result sent back to SOO, it can not setSimulationDone(true)
@@ -167,18 +171,23 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 			thread.join();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (instance != null)
+				instance.dispose();
 		}
 		if (calcFitness) {   // if true, publish calculated fitness to OT, so a claculator is needed, if false, no need calculation, do nothing,    ( or send calculated result/1.0 to SOO , NO!)
 			parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(), true, parent.getSimulationID(), 100.0));
 		} else {
-			try {  //send final result to SOO for setting simulation done
-				final ChatManager chatmanager = ChatManager.getInstanceFor(parent.getConnection());
-				final Chat newChat = chatmanager.chatWith(parent.getOrchestratorJID().asEntityBareJidIfPossible());
-				SimulationResultMessage reply = new SimulationResultMessage(parent.getOptimizationID(), true, parent.getSimulationID(), 100.0);
-				MessageSerializer serializer = new MessageSerializer();
-				newChat.send(serializer.toJson(reply));						
-			} catch(final Exception e) {
-				e.printStackTrace();
+			if (parent.isOrchestratorAvailable()) {
+				try { // send final result to SOO for setting simulation done
+					final ChatManager chatmanager = ChatManager.getInstanceFor(parent.getConnection());
+					final Chat newChat = chatmanager.chatWith(parent.getOrchestratorJID().asEntityBareJidIfPossible());
+					SimulationResultMessage reply = new SimulationResultMessage(parent.getOptimizationID(), true, parent.getSimulationID(), 100.0);
+					MessageSerializer serializer = new MessageSerializer();
+					newChat.send(serializer.toJson(reply));
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
