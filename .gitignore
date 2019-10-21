@@ -6,8 +6,6 @@ RemoteSystemsTempFiles/
 *.git/
 **/generated/
 **/bin/
-**/gazeboManager.jar
-**/gazebo.jar
 git.sh
 red.sh
 
