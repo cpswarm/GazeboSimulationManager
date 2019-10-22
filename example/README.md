@@ -1,19 +1,13 @@
 # Usage of CPSWarm gazebo-simulation-manager Image
-This repository provides a gazebo Simulation Manager that includes a XMPP client and interfaces with a Gazebo simulator. In this example folder, a `Dockerfile-Gazebo-Manager` file starting from Cpswarm pre-build images using Ubuntu16.04 and Openjdk-8 has been used to dockerize it as a [`gazebo-simulation-manager`](https://cloud.docker.com/u/cpswarm/repository/docker/cpswarm/gazebo-simulation-manager) image for a further dockerization together with your ros simulations.
+The [`gazebo-simulation-manager`](https://cloud.docker.com/u/cpswarm/repository/docker/cpswarm/gazebo-simulation-manager) image provides a gazebo Simulation Manager that includes a XMPP client and interfaces with a Gazebo simulator. It was a Cpswarm pre-build image using Ubuntu16.04 and Openjdk-8 and it allows a further dockerization together with your ros simulations starting from it.
 
 Similar steps are available for other operating systems and JDK may work.
-
-Build gazebo-simulation-manager image :
-```bash
-sudo docker build . --tag=gazebo-simulation-manager:latest -f Dockerfile-gazebo-Manager
-```
 
 ### Structure of example folder
 ``` java
     example/
         resources/
             manager.xml
-        Dockerfile-Gazebo-Manager      -- Docker file for creating the gazebo-simulation-manager image
         Dockerfile-Gazebo-Simulation   -- Docker file for creating the gazebo-simulation image
         JVM-Certifivcation.pem
         launch_SM.sh    			  -- script for launching the simulation manager
