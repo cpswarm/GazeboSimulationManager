@@ -57,7 +57,7 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
 
    The "launch_SM.sh" script which launches the Gazebo simulation manager will be executed by default once the image is run, the properties set by `-D` option will be delivered to the `gazeboManager.jar`.
    ```bash
-   sudo docker run -it cpswarm/gazebo-simulation:latest -Dverbosity=2
+   sudo docker run -it cpswarm/gazebo-simulation:latest /root/launch_SM.sh -Dverbosity=2
    ```
 
 *  Run gazebo-simulation image and enter the `bash` shell
