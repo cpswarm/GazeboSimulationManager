@@ -8,9 +8,9 @@ Similar steps are available for other OS and JDK versions.
     example/
         resources/
             manager.xml                -- Configuration file for connecting to XMPP server and simulation tool capability
-        Dockerfile-Gazebo-Simulation   -- Docker file for creating the gazebo-simulation image
+        Dockerfile-Gazebo-Simulation   -- Dockerfile for creating the gazebo-simulation image
         JVM-Certifivcation.pem         -- Certificate extracted from the XMPP server
-        launch_SM.sh    			   -- Script for launching the simulation manager
+        launch_SM.sh                   -- Script for launching the simulation manager
         ws/
             build.sh                   -- Script for compiling the ros simulation
             src/
@@ -23,9 +23,10 @@ The `example` folder provides an example about how to create a docker image base
 Before dockerizing the ros simulation package starting from the gazebo-simulation-manager image, follow the steps:
 
 1.  Change the configuration file `manager.xml` in `resources` folder according to the real use case. This file can be used to change some system parameters used by the Gazebo simulation manager to communicate with other components in the CPSWarm simulation environment.
-2.  place the ros simulation packages in the `example/ws/src/` folder
-3.  Replace the file `JVM-Certifivcation.pem` used in real case
-4.  (If using default setting, skip this step) The `gazeboManager.jar` has some internal system properies already set inside for configuring its launching environment, so user can set individual System properties with the -D option for passing the command line parameters to override the properties listed below:
+2.  If some envitonment variables will be used during compilation, must export variables in `build.sh` file, otherwise, skip this step. 
+3.  place the ros simulation packages in the `example/ws/src/` folder.
+4.  Replace the file `JVM-Certifivcation.pem` used in real case.
+5.  (If using default setting, skip this step) The `gazeboManager.jar` has some internal system properies already set inside for configuring its launching environment, so user can set individual System properties with the -D option for passing the command line parameters to override the properties listed below:
 
       ``` bash
       org.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog,\
@@ -49,13 +50,13 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
    ```
 *  Run gazebo-simulation image and start Gazebo simulation manager
 
-   The "launch_SM.sh" script which launches the Gazebo simulation manager will be executed by default once the image is run, the properties set by `-D` option will be delivered to the `gazeboManager.jar` coming from the cpswarm/gazebo-simulation-manager image.
+   The "launch_SM.sh" script which launches the Gazebo simulation manager will be executed by default once the image is run, the properties set by `-D` option will be delivered to the `gazeboManager.jar` coming from the cpswarm/gazebo-simulation-manager image. Access to the Gazebo GUI from [http://localhost:6901/vnc.html](http://localhost:6901/vnc.html) if visual:=true
    ```bash
-   sudo docker run -it gazebo-simulation:latest /home/launch_SM.sh -Dverbosity=2
+   sudo docker run -it -p 5901:5901 -p 6901:6901 gazebo-simulation:latest /home/launch_SM.sh -Dverbosity=2
    ```
 
 *  Run gazebo-simulation image and enter the `bash` shell, then launch Gazebo simulation manager
    ```bash
-   $ sudo docker run -it gazebo-simulation:latest bash
+   $ sudo docker run -it -p 5901:5901 -p 6901:6901 gazebo-simulation:latest bash
    ~# ./launch_SM.sh -Dverbosity=2
    ```
