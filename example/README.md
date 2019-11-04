@@ -1,20 +1,20 @@
 # Usage of CPSWarm gazebo-simulation-manager Image
-The [`gazebo-simulation-manager`](https://cloud.docker.com/u/cpswarm/repository/docker/cpswarm/gazebo-simulation-manager) image provides a gazebo Simulation Manager that includes a XMPP client and interfaces with a Gazebo simulator. It was a Cpswarm pre-build image using Ubuntu16.04 and Openjdk-8 and it allows a further dockerization together with your ros simulations starting from it.
+The [`cpswarm/gazebo-simulation-manager`](https://cloud.docker.com/u/cpswarm/repository/docker/cpswarm/gazebo-simulation-manager) image provides a gazebo Simulation Manager that includes a XMPP client and interfaces with a Gazebo simulator. It was a Cpswarm pre-build image using Ubuntu16.04 and Openjdk-8 and it allows a further dockerization together with your ros simulations starting from it.
 
-Similar steps are available for other operating systems and JDK may work.
+Similar steps are available for other OS and JDK versions.
 
 ### Structure of example folder
 ``` java
     example/
         resources/
-            manager.xml
+            manager.xml                -- Configuration file for connecting to XMPP server and simulation tool capability
         Dockerfile-Gazebo-Simulation   -- Docker file for creating the gazebo-simulation image
-        JVM-Certifivcation.pem
-        launch_SM.sh    			  -- script for launching the simulation manager
+        JVM-Certifivcation.pem         -- Certificate extracted from the XMPP server
+        launch_SM.sh    			   -- Script for launching the simulation manager
         ws/
-            build.sh                  -- script for compiling the ros simulation
+            build.sh                   -- Script for compiling the ros simulation
             src/
-                Ros-package-name/     -- Please put your Ros packages in this src folder
+                Ros-package-name/      -- Please put your Ros packages in this src folder
 ```
 
 
@@ -49,13 +49,13 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
    ```
 *  Run gazebo-simulation image and start Gazebo simulation manager
 
-   The "launch_SM.sh" script which launches the Gazebo simulation manager will be executed by default once the image is run, the properties set by `-D` option will be delivered to the `gazeboManager.jar`.
+   The "launch_SM.sh" script which launches the Gazebo simulation manager will be executed by default once the image is run, the properties set by `-D` option will be delivered to the `gazeboManager.jar` coming from the cpswarm/gazebo-simulation-manager image.
    ```bash
-   sudo docker run -it cpswarm/gazebo-simulation:latest /root/launch_SM.sh -Dverbosity=2
+   sudo docker run -it cpswarm/gazebo-simulation:latest /home/launch_SM.sh -Dverbosity=2
    ```
 
-*  Run gazebo-simulation image and enter the `bash` shell
+*  Run gazebo-simulation image and enter the `bash` shell, then launch Gazebo simulation manager
    ```bash
-   $ sudo docker run -it cpswarm/gazebo-simulation:latest --entrypoint /bin/bash
-   $ ./launch_SM.sh -Dverbosity=2
+   $ sudo docker run -it cpswarm/gazebo-simulation:latest bash
+   ~# ./launch_SM.sh -Dverbosity=2
    ```
