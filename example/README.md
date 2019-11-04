@@ -43,9 +43,9 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
       ```
 5.  Create `gazebo-simulation` image
 
-*  Build gazebo-simulation image in repository root folder
+*  Build gazebo-simulation image in the example folder
    ``` bash
-   sudo docker build . --tag=gazebo-simulation:latest -f Dockerfile-Gazebo-simulation
+   sudo docker build . --tag=gazebo-simulation:latest -f Dockerfile-Gazebo-Simulation
    ```
 *  Run gazebo-simulation image and start Gazebo simulation manager
 
