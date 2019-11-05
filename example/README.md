@@ -13,6 +13,7 @@ Similar steps are available for other OS and JDK versions.
         launch_SM.sh                   -- Script for launching the simulation manager
         ws/
             build.sh                   -- Script for compiling the ros simulation
+            global_variables.env       -- Configuration file for defining the global variables in simulation
             src/
                 Ros-package-name/      -- Please put your Ros packages in this src folder
 ```
@@ -23,7 +24,7 @@ The `example` folder provides an example about how to create a docker image base
 Before dockerizing the ros simulation package starting from the gazebo-simulation-manager image, follow the steps:
 
 1.  Change the configuration file `manager.xml` in `resources` folder according to the real use case. This file can be used to change some system parameters used by the Gazebo simulation manager to communicate with other components in the CPSWarm simulation environment.
-2.  If some envitonment variables will be used during compilation, must export variables in `build.sh` file, otherwise, skip this step. 
+2.  If some envitonment variables will be used during compilation, must export variables also in `build.sh` file to make sure they are executed by a same process, because the definition in Dockerfile will not be effective, otherwise, skip this step. 
 3.  place the ros simulation packages in the `example/ws/src/` folder.
 4.  Replace the file `JVM-Certifivcation.pem` used in real case.
 5.  (If using default setting, skip this step) The `gazeboManager.jar` has some internal system properies already set inside for configuring its launching environment, so user can set individual System properties with the -D option for passing the command line parameters to override the properties listed below:
