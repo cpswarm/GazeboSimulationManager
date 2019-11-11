@@ -61,3 +61,7 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
    $ sudo docker run -it -p 5901:5901 -p 6901:6901 gazebo-simulation:latest bash
    ~# ./launch_SM.sh -Dverbosity=2
    ```
+
+*  Update the image in dockerhub and then deploy it using kubernetes
+
+   This can be done using the features provided by the Simulation and Optimization Orchestrator
