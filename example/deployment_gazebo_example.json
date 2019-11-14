@@ -29,7 +29,10 @@
             {
               "name": "gazebo",
               "image": "xyz/gazebo-simulation:latest",
-			  "stdin": "true"
+			  "stdin": "true",
+			  "args": [
+					"./startup.sh"
+					]
             }
           ],
           "nodeSelector": {
