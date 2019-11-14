@@ -1,0 +1,74 @@
+{
+  "deployments": [
+    {
+      "metadata": {
+        "name": "gazebo",
+        "namespace": "default",
+        "generation": 1,
+        "labels": {
+          "k8s-app": "gazebo"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "k8s-app": "gazebo"
+          }
+        }
+      },
+      "template": {
+        "metadata": {
+          "name": "gazebo",
+          "labels": {
+            "k8s-app": "gazebo"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "gazebo",
+              "image": "xyz/gazebo-simulation:latest",
+			  "stdin": "true"
+            }
+          ],
+          "nodeSelector": {
+            "component": "gazebo"
+          }
+        }
+      }
+    }
+  ],
+  "services": [
+    {
+      "metadata": {
+        "application": "headless-vnc",
+        "name": "headless-vnc",
+        "namespace": "default"
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "http-port-tcp",
+            "protocol": "TCP",
+            "port": 6901,
+            "targetPort": 6901,
+            "nodePort": 32001
+          },
+          {
+            "name": "vnc-port-tcp",
+            "protocol": "TCP",
+            "port": 5901,
+            "targetPort": 5901,
+            "nodePort": 32002
+          }
+        ]
+      },
+      "selector": {
+        "k8s-app": "gazebo"
+      },
+      "type": "NodePort"
+    }
+  ]
+}
+

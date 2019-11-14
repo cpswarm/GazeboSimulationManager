@@ -64,4 +64,6 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
 
 *  Update the image in dockerhub and then deploy it using kubernetes
 
-   This can be done using the features provided by the Simulation and Optimization Orchestrator
+   This can be done using the features provided by the Simulation and Optimization Orchestrator. To deploy the image that you have created you can use the file deployment_gazebo_example.json, changing the name of the container to be deployed in /template/spec/containers/image and the number of containers to be deployed in /spec/replicas. This snippet of code deploys beside the gazebo simulation image, also one service, it is needed to allow to access to the simulator GUI, through VNC. 
+   Note 1: the format used is a simplified version of the one used to describe a Kubernetes deployment. If you don't want to use the SOO to deploy the images, but directly work on the Kubernetes API you have to use a different file.
+   Note 2: in the example, the containers have a node selector set in /template/spec/containers/nodeSelector, this allow to select the nodes in which it can be installed, for example in this case, it will be installed in all the nodes with the label component:stage (the label can be  add with the command: kubectl label node <node_to_be_labeled> component=gazebo). If nodeSelector is not used the image will be installed in one of the nodes of the cluster with enough resources to run it.
