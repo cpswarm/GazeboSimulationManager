@@ -100,12 +100,11 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 						if (instance != null)
 							instance.dispose();
 					}
-					System.out.println("Compilation finished, " + result);
+					System.out.println("Compilation finished, with succeed = " + result);
 
 					if (result) {
 						runSimulation(true);
 					} else {
-						System.out.println("Error");
 						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(),
 								"Error calculating fitness score", ReplyMessage.Status.ERROR, parent.getSimulationID(),
 								BAD_FITNESS));
@@ -168,7 +167,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				Properties props = new Properties();
 				props.put("rosWorkspace", parent.getCatkinWS());
 				props.put("ros.package", packageName);
-				props.put("ros.node", "gazebo.launch");
+				props.put("ros.node", parent.getLaunchFile());
 				props.put("ros.mappings", parent.getSimulationConfiguration());
 				commandInstance = this.rosCommandFactory.newInstance((Dictionary) props);
 				RosCommand roslaunch = (RosCommand) commandInstance.getInstance();

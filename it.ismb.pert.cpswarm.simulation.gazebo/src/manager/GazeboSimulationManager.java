@@ -64,6 +64,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		boolean monitoring = false;
 		String mqttBroker = "";
 		String verbosity = "2";
+		String launchFile = null;
 
 		Server serverInfo = new Server();
 		try {
@@ -75,6 +76,9 @@ public class GazeboSimulationManager extends SimulationManager {
 				System.out.println("Invalid verbosity level, using the default one: ALL");
 			} else {
 				CURRENT_VERBOSITY_LEVEL = VERBOSITY_LEVELS.values()[verbosityI];
+			}
+			if(context.getProperty("simulation.launch.file")!=null){
+				launchFile = context.getProperty("simulation.launch.file");
 			}
 			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
 				System.out.println("Instantiate a GazeboSimulationManager .....");
@@ -137,7 +141,7 @@ public class GazeboSimulationManager extends SimulationManager {
 			e.printStackTrace();
 		}
 		connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
-				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE);
+				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile);
 		publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
 		while (true) {
@@ -166,7 +170,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		Gson gson = new Gson();
 		String statusToSend = gson.toJson(serverInfo, Server.class);
 		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-			System.out.println(" \n MA : the server info is " + statusToSend);
+			System.out.println(" \n SM : the server info is " + statusToSend);
 		}		
 		presence.setStatus(statusToSend);
 		try {
