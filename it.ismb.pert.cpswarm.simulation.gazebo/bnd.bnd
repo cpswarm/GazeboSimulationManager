@@ -3,7 +3,6 @@ Bundle-Version: 1.1.1
 	osgi.core;version=5.0,\
 	osgi.cmpn;version=6.0,\
 	osgi.enterprise,\
-	osgi.residential,\
 	org.igniterealtime.smack.core;version=4.3,\
 	org.igniterealtime.smack.extensions;version=4.3.1,\
 	org.igniterealtime.smack.im;version=4.3.1,\

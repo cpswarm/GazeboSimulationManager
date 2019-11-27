@@ -2,6 +2,7 @@ package manager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Dictionary;
 import java.util.Properties;
@@ -17,6 +18,8 @@ import com.google.gson.Gson;
 import messages.server.Capabilities;
 import messages.server.Server;
 import simulation.SimulationManager;
+import simulation.SimulationManager.VERBOSITY_LEVELS;
+
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
@@ -162,21 +165,46 @@ public class GazeboSimulationManager extends SimulationManager {
 		FileTransferListenerImpl fileTransferListener = (FileTransferListenerImpl) fileTransferListenerInstace
 				.getInstance();
 		this.addFileTransfer(fileTransferListener);
-
-		serverInfo.setServer(clientJID.asUnescapedString());
-		ServiceDiscoveryManager disco = ServiceDiscoveryManager.getInstanceFor(this.getConnection());
-		disco.addFeature("http://jabber.org/protocol/si/profile/file-transfer");
-		final Presence presence = new Presence(Presence.Type.available);
-		Gson gson = new Gson();
-		String statusToSend = gson.toJson(serverInfo, Server.class);
-		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-			System.out.println(" \n SM : the server info is " + statusToSend);
-		}		
-		presence.setStatus(statusToSend);
+		ProcessBuilder builder = null;
+		Process process = null;
+		boolean result = true;
 		try {
-			this.getConnection().sendStanza(presence);
-		} catch (final NotConnectedException | InterruptedException e) {
-			e.printStackTrace();
+			builder = new ProcessBuilder(new String[] { "/bin/bash", "-c",
+					"source /opt/ros/kinetic/setup.bash; cd " + this.getCatkinWS() + " ; catkin build " });
+			builder.inheritIO();
+			process = builder.start();
+			process.waitFor();
+			if (CURRENT_VERBOSITY_LEVEL.equals(VERBOSITY_LEVELS.ALL)) {
+				System.out.println("build workspace finished");
+			}
+		} catch (IOException |InterruptedException err) {
+			result = false;
+			System.err.println("Error when building workspace: " + this.getCatkinWS());
+			err.printStackTrace();
+		} finally {
+			if (process != null) {
+				process.destroy();
+				process = null;
+			}
+		}
+		System.out.println("Compilation finished, with succeed = " + result);
+		if (result) {
+			serverInfo.setServer(clientJID.asUnescapedString());
+			ServiceDiscoveryManager disco = ServiceDiscoveryManager.getInstanceFor(this.getConnection());
+			disco.addFeature("http://jabber.org/protocol/si/profile/file-transfer");
+			final Presence presence = new Presence(Presence.Type.available);
+			Gson gson = new Gson();
+			if (SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+				System.out.println("\nGazebo SM : the server info is " + gson.toJson(serverInfo, Server.class));
+			}
+			presence.setStatus(gson.toJson(serverInfo, Server.class));
+			try {
+				this.getConnection().sendStanza(presence);
+			} catch (final NotConnectedException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		} else {
+			return;
 		}
 	}
 

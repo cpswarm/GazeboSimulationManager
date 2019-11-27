@@ -25,11 +25,10 @@ import simulation.SimulationManager;
 @Component(factory = "it.ismb.pert.cpswarm.gazeboMessageEventCoordinatorImpl.factory")
 public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator {
 
-	private String packageName = null;
 	private SimulationManager parent = null;
 	private ComponentFactory simulationLauncherFactory;
 	private ComponentFactory rosCommandFactory; // used to catkin build the workspace
-
+	private Process process;
 	@Activate
 	protected void activate(Map<String, Object> properties) throws Exception {
 		for (Entry<String, Object> entry : properties.entrySet()) {
@@ -68,7 +67,6 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	protected void handleCandidate(final EntityBareJid sender, final String candidate) {
 		try {
 			packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
-			packageFolder = parent.getRosFolder() + packageName;
 			if (sender.equals(JidCreate.entityBareFrom(parent.getOptimizationJID()))) {
 				if (candidate.equals("test")) {
 					parent.setTestResult("optimization");
@@ -80,36 +78,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
 					return;
 				}
-				System.out.println("handling candidate:"+ /*candidate +*/" , for Task ID: "+parent.getOptimizationID());
-				if (!candidate.isEmpty()) {
-					System.out.println("Compiling the package "+packageName);
-					String catkinWS = parent.getCatkinWS();
-					Properties props = new Properties();
-					props.put("ros.buildWorkspace", catkinWS);
-					ComponentInstance instance = null;
-					boolean result = true;
-					try {
-						instance = this.rosCommandFactory.newInstance((Dictionary) props);
-						RosCommand catkinBuild = (RosCommand) instance.getInstance();
-						catkinBuild.buildWorkspace();
-					} catch (Exception err) {
-						result = false;
-						System.err.println("Error building workspace: " + catkinWS);
-						err.printStackTrace();
-					} finally {
-						if (instance != null)
-							instance.dispose();
-					}
-					System.out.println("Compilation finished, with succeed = " + result);
-
-					if (result) {
-						runSimulation(true);
-					} else {
-						parent.publishFitness(new SimulationResultMessage(parent.getOptimizationID(),
-								"Error calculating fitness score", ReplyMessage.Status.ERROR, parent.getSimulationID(),
-								BAD_FITNESS));
-					}
-				}
+				runSimulation(true);
 			} else {
 				if (candidate.equals("test")) {
 					parent.setTestResult("simulation");
@@ -129,6 +98,13 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	}
 
 	private void runSimulation(boolean calcFitness) throws IOException, InterruptedException {
+		try {
+			process = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", "rosclean purge -y; rm "+parent.getBagPath()+"*.bag" });
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
+		
 		Properties props = new Properties();
 		props.put("rosWorkspace", parent.getCatkinWS());
 				
