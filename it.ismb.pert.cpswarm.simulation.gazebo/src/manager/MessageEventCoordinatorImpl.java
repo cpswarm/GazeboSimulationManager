@@ -16,6 +16,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import be.iminds.iot.ros.util.RosCommand;
+import eu.cpswarm.optimization.messages.ParameterSet;
 import eu.cpswarm.optimization.messages.ReplyMessage;
 import eu.cpswarm.optimization.messages.SimulationResultMessage;
 import simulation.xmpp.AbstractMessageEventCoordinator;
@@ -64,7 +65,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 	}
 
 	@Override
-	protected void handleCandidate(final EntityBareJid sender, final String candidate) {
+	protected void handleCandidate(final EntityBareJid sender, final ParameterSet parameterSet) {
 		try {
 			packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
 			if (sender.equals(JidCreate.entityBareFrom(parent.getOptimizationJID()))) {

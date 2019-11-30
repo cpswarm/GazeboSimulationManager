@@ -6,10 +6,8 @@ RemoteSystemsTempFiles/
 *.git/
 **/generated/
 **/bin/
-**/*.jar
 **/gazebo.bndrun
 git.sh
-red.sh
 
 
 
