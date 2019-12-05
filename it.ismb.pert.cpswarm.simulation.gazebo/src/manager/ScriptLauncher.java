@@ -36,7 +36,6 @@ public class ScriptLauncher implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Launching the thread to reset the map");
 		try {
 			System.out.println("Launching script: /bin/bash " + catkinWS + "costmap_clear.sh");
 			proc = Runtime.getRuntime().exec("/bin/bash " + catkinWS + "costmap_clear.sh");
@@ -51,7 +50,7 @@ public class ScriptLauncher implements Runnable {
 	@Deactivate
 	void deactivate() {
 		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-			System.out.println("Simulation launcher is deactived");
+			System.out.println("costmap_clear.sh launcher is deactived");
 		}
 		if (proc != null) {
 			proc.destroy();

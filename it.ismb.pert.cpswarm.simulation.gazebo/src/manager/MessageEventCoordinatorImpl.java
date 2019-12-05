@@ -69,11 +69,11 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 		try {
 			packageName = parent.getOptimizationID().substring(0, parent.getOptimizationID().indexOf("!"));
 			if (sender.equals(JidCreate.entityBareFrom(parent.getOptimizationJID()))) {
-				if (candidate.equals("test")) {
+				if (parameterSet.getParameters().get(0).getName().equals("test")) {
 					parent.setTestResult("optimization");
 					return;
 				}
-				if (!serializeCandidate(candidate)) {
+				if (!serializeCandidate(parameterSet)) {
 					parent.publishFitness(
 							new SimulationResultMessage(parent.getOptimizationID(), "Error serializing the candidate",
 									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
@@ -81,11 +81,11 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				}
 				runSimulation(true);
 			} else {
-				if (candidate.equals("test")) {
+				if (parameterSet.getParameters().get(0).getName().equals("test")) {
 					parent.setTestResult("simulation");
 					return;
 				}
-				if (!serializeCandidate(candidate)) {
+				if (!serializeCandidate(parameterSet)) {
 					parent.publishFitness(
 							new SimulationResultMessage(parent.getOptimizationID(), "Error serializing the candidate",
 									ReplyMessage.Status.ERROR, parent.getSimulationID(), BAD_FITNESS));
@@ -100,7 +100,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 
 	private void runSimulation(boolean calcFitness) throws IOException, InterruptedException {
 		try {
-			process = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", "rosclean purge -y; rm "+parent.getBagPath()+"*.bag" });
+			process = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", "source /opt/ros/kinetic/setup.bash; rosclean purge -y; rm "+parent.getBagPath()+"*.bag" });
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -148,7 +148,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 				props.put("ros.mappings", parent.getSimulationConfiguration());
 				commandInstance = this.rosCommandFactory.newInstance((Dictionary) props);
 				RosCommand roslaunch = (RosCommand) commandInstance.getInstance();
-				System.out.println("Launching finished");
+				System.out.println("Simulation finished");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -168,7 +168,7 @@ public class MessageEventCoordinatorImpl extends AbstractMessageEventCoordinator
 		}
 		Process proc;
 		try {
-			proc = Runtime.getRuntime().exec("killall " + packageName);
+			proc = Runtime.getRuntime().exec("killall -9 roslaunch");
 			proc.waitFor();
 			proc.destroy();
 			proc = null;

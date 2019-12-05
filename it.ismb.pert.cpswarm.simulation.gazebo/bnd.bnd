@@ -12,7 +12,7 @@ Bundle-Version: 1.1.1
 	be.iminds.iot.ros.api,\
 	org.jxmpp.core,\
 	it.ismb.pert.cpswarm.simulation.manager;version=latest,\
-	optimization-messages;version=0.0
+	optimization-messages;version=0.0.2
 
 
 Private-Package: manager

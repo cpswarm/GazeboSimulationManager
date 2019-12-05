@@ -83,20 +83,23 @@ public class GazeboSimulationManager extends SimulationManager {
 			if(context.getProperty("simulation.launch.file")!=null){
 				launchFile = context.getProperty("simulation.launch.file");
 			}
+			if (launchFile == null) {
+				System.out.println("launchFile = null");
+				deactivate();
+			}
 			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
 				System.out.println("Instantiate a GazeboSimulationManager .....");
 			}
 			
 			documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			String managerConfigFile = context.getProperty("Manager.config.file.manager.xml");
-			Document document = null;
-
-			FileInputStream s = new FileInputStream(managerConfigFile);
-			document = documentBuilder.parse(s);
-			if (document == null) {
-				System.out.println("document = null");
+			if (managerConfigFile == null) {
+				System.out.println("managerConfigFile = null");
 				deactivate();
 			}
+			Document document = null;
+			FileInputStream s = new FileInputStream(managerConfigFile);
+			document = documentBuilder.parse(s);
 			serverURI = InetAddress.getByName(document.getElementsByTagName("serverURI").item(0).getTextContent());
 			serverName = document.getElementsByTagName("serverName").item(0).getTextContent();
 			serverPassword = document.getElementsByTagName("serverPassword").item(0).getTextContent();
@@ -133,7 +136,7 @@ public class GazeboSimulationManager extends SimulationManager {
 			}
 			if (!new File(dataFolder).isDirectory()) {
 				System.out.println("Data folder must be a folder");
-				return;
+				deactivate();
 			}
 
 		} catch (ParserConfigurationException e1) {
@@ -143,12 +146,13 @@ public class GazeboSimulationManager extends SimulationManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
+		boolean connected = connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile);
-		publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
+		if(connected) {
+			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
-		while (true) {
-		}
+		} else
+			deactivate();
 	}
 
 	public void publishPresence(final InetAddress serverURI, final String serverName, final String serverPassword,
