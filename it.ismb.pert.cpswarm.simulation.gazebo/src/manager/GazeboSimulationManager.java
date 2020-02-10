@@ -175,12 +175,10 @@ public class GazeboSimulationManager extends SimulationManager {
 		try {
 			builder = new ProcessBuilder(new String[] { "/bin/bash", "-c",
 					"source /opt/ros/kinetic/setup.bash; cd " + this.getCatkinWS() + " ; catkin build " });
-			builder.inheritIO();
+			if (CURRENT_VERBOSITY_LEVEL.equals(VERBOSITY_LEVELS.ALL))	
+				builder.inheritIO();
 			process = builder.start();
 			process.waitFor();
-			if (CURRENT_VERBOSITY_LEVEL.equals(VERBOSITY_LEVELS.ALL)) {
-				System.out.println("build workspace finished");
-			}
 		} catch (IOException |InterruptedException err) {
 			result = false;
 			System.err.println("Error when building workspace: " + this.getCatkinWS());
@@ -191,7 +189,8 @@ public class GazeboSimulationManager extends SimulationManager {
 				process = null;
 			}
 		}
-		System.out.println("Compilation finished, with succeed = " + result);
+		if (CURRENT_VERBOSITY_LEVEL.equals(VERBOSITY_LEVELS.ALL))
+			System.out.println("Compilation finished, with succeed = " + result);
 		if (result) {
 			serverInfo.setServer(clientJID.asUnescapedString());
 			ServiceDiscoveryManager disco = ServiceDiscoveryManager.getInstanceFor(this.getConnection());

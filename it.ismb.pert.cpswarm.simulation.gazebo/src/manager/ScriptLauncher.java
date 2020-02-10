@@ -21,7 +21,6 @@ import simulation.SimulationManager;
 @Component(factory = "it.ismb.pert.cpswarm.scriptLauncher.factory")
 public class ScriptLauncher implements Runnable {
 	private String catkinWS = null;
-	private boolean canRun = true;
 	private Process proc = null;
 
 	@Activate
@@ -39,12 +38,13 @@ public class ScriptLauncher implements Runnable {
 		try {
 			System.out.println("Launching script: /bin/bash " + catkinWS + "costmap_clear.sh");
 			proc = Runtime.getRuntime().exec("/bin/bash " + catkinWS + "costmap_clear.sh");
-			Runtime.getRuntime().addShutdownHook(new Thread(proc::destroy));
 			System.out.println("costmap_clear.sh launched");
+			proc.waitFor();
+			proc.destroy();
+			proc = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Deactivate
@@ -53,14 +53,14 @@ public class ScriptLauncher implements Runnable {
 			System.out.println("costmap_clear.sh launcher is deactived");
 		}
 		if (proc != null) {
-			proc.destroy();
+			proc.destroyForcibly();
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			proc = null;
 		}
-	}
-
-	public synchronized void setCanRun(boolean canRun) {
-		this.canRun = canRun;
-		deactivate();
 	}
 
 }
