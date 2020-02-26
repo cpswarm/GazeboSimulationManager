@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1581373762000">
+<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1581532385000">
   <resource>
     <capability namespace="osgi.identity">
       <attribute name="osgi.identity" value="gson-extras-bundle"/>
@@ -2479,10 +2479,10 @@
       <attribute name="objectClass" value="be.iminds.iot.ros.util.RosCommandInjection" type="List&lt;String&gt;"/>
     </capability>
     <capability namespace="osgi.content">
-      <attribute name="size" value="19093" type="Long"/>
+      <attribute name="size" value="19253" type="Long"/>
       <attribute name="url" value="be.iminds.iot.ros.api/be.iminds.iot.ros.api-0.4.0.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
-      <attribute name="osgi.content" value="06EDBFD3A3B6749B91D37684956D53D8C3331F9AADD4830882F1E33A16E2D1D2"/>
+      <attribute name="osgi.content" value="15A6DF74368F4ADBCA9A784373CB5BC9CACDEDED608CD83D7F37B12502281B49"/>
     </capability>
     <requirement namespace="osgi.wiring.package">
       <directive name="filter" value="(&amp;(osgi.wiring.package=be.iminds.iot.ros.api)(&amp;(version&gt;=0.3.0)(!(version&gt;=1.0.0))))"/>
@@ -2570,10 +2570,10 @@
       <attribute name="objectClass" value="manager.StageSimulationManager" type="List&lt;String&gt;"/>
     </capability>
     <capability namespace="osgi.content">
-      <attribute name="size" value="36423" type="Long"/>
+      <attribute name="size" value="36342" type="Long"/>
       <attribute name="url" value="it.ismb.pert.cpswarm.simulation.stage/it.ismb.pert.cpswarm.simulation.stage-1.1.0.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
-      <attribute name="osgi.content" value="2119BFC75627C6600E5E81BF5AF4097D16BF3B28A508ED393F39B06DF28703E1"/>
+      <attribute name="osgi.content" value="1E28F079DCE85E3C6BAE2E48530748BA035BA93A6B82A75F1846A6A60D931572"/>
     </capability>
     <requirement namespace="osgi.wiring.package">
       <directive name="filter" value="(&amp;(osgi.wiring.package=be.iminds.iot.ros.util)(&amp;(version&gt;=0.3.0)(!(version&gt;=1.0.0))))"/>
