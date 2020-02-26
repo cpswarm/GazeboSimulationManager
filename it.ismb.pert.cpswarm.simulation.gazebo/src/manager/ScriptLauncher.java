@@ -1,15 +1,11 @@
 package manager;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-
-import be.iminds.iot.ros.util.NativeRosNode.VERBOSITY_LEVELS;
 import simulation.SimulationManager;
 
 /**
@@ -36,12 +32,13 @@ public class ScriptLauncher implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Launching the thread to reset the map");
 		try {
 			System.out.println("Launching script: /bin/bash " + catkinWS + "costmap_clear.sh");
 			proc = Runtime.getRuntime().exec("/bin/bash " + catkinWS + "costmap_clear.sh");
-			Runtime.getRuntime().addShutdownHook(new Thread(proc::destroy));
 			System.out.println("costmap_clear.sh launched");
+			proc.waitFor();
+			proc.destroy();
+			proc = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -51,17 +48,23 @@ public class ScriptLauncher implements Runnable {
 	@Deactivate
 	void deactivate() {
 		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-			System.out.println("Simulation launcher is deactived");
+			System.out.println("costmap_clear.sh launcher is deactived");
 		}
 		if (proc != null) {
-			proc.destroy();
+			proc.destroyForcibly();
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			proc = null;
 		}
 	}
 
 	public synchronized void setCanRun(boolean canRun) {
 		this.canRun = canRun;
-		deactivate();
+		if(!canRun)
+			deactivate();
 	}
 
 }

@@ -1,9 +1,11 @@
 package manager;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
@@ -50,34 +52,54 @@ public class FileTransferListenerImpl extends AbstractFileTransferListener {
 
 	@Override
 	protected boolean unzipFiles(final String fileToReceive) {
+		String packagePath = null;
 		try {
 			byte[] buffer = new byte[1024];
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(fileToReceive));
 			ZipEntry zipEntry = zis.getNextEntry();
-			while (zipEntry != null) {
-				String fileName = zipEntry.getName();
-				File newFile = null;
-				// The wrapper is copied to the ROS folder
-				if (fileName.endsWith(".cpp")) {
-					newFile = new File(rosFolder + fileName);
-				} else {
-					newFile = new File(dataFolder + fileName);
+			Process proc = null;
+			File newFile = null;
+			String fileName = null;
+			FileOutputStream fos = null;
+			proc = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c",
+					"source " + parent.getCatkinWS() + "devel/setup.bash ; rospack find " + packageName });
+			BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+			if ((packagePath = input.readLine()) != null && !packagePath.startsWith("[rospack]")) {
+				proc.waitFor();
+				proc = null;
+				input.close();
+				input = null;
+				while (zipEntry != null) {
+					fileName = zipEntry.getName();
+					newFile = null;
+					// The wrapper is copied to the ROS folder
+					if (fileName.endsWith(".cpp")) {
+						newFile = new File(packagePath + File.separator + "world" + File.separator + fileName);
+					} else {
+						newFile = new File(dataFolder + fileName);
+					}
+					fos = new FileOutputStream(newFile);
+					int len;
+					while ((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+					fos.close();
+					zipEntry = zis.getNextEntry();
+					fileName = null;
 				}
-				System.out.println("\n new file is = "+ newFile+"\n");
-				FileOutputStream fos = new FileOutputStream(newFile);
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-				fos.close();
-				zipEntry = zis.getNextEntry();
+				zis.closeEntry();
+				zis.close();
+			} else {
+				System.out.println("Error: the " + packageName + " package doesn't exist");
+				return false;
 			}
-			zis.closeEntry();
-			zis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
-		}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
 
 		return true;
 	}
