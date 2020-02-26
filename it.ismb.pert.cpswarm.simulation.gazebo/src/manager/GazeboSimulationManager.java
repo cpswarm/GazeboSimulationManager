@@ -68,6 +68,8 @@ public class GazeboSimulationManager extends SimulationManager {
 		String mqttBroker = "";
 		String verbosity = "2";
 		String launchFile = null;
+		String fitnessFunction = null;
+		int maxNumberOfCarts = 0;
 
 		Server serverInfo = new Server();
 		try {
@@ -87,10 +89,20 @@ public class GazeboSimulationManager extends SimulationManager {
 				System.out.println("launchFile = null");
 				deactivate();
 			}
-			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
-				System.out.println("Instantiate a GazeboSimulationManager .....");
+			if(context.getProperty("fitness.function")!=null){
+				fitnessFunction = context.getProperty("fitness.function");
 			}
-			
+			if (fitnessFunction == null) {
+				System.out.println("path of fitness function = null");
+				deactivate();
+			}
+			if(context.getProperty("maxNumber.carts")!=null){
+				maxNumberOfCarts = Integer.parseInt(context.getProperty("maxNumber.carts"));
+			}
+			if (maxNumberOfCarts == 0) {
+				System.out.println("the number of carts can not be 0");
+				deactivate();
+			}
 			documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			String managerConfigFile = context.getProperty("Manager.config.file.manager.xml");
 			if (managerConfigFile == null) {
@@ -147,7 +159,7 @@ public class GazeboSimulationManager extends SimulationManager {
 			e.printStackTrace();
 		}
 		boolean connected = connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
-				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile);
+				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile, fitnessFunction, maxNumberOfCarts);
 		if(connected) {
 			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);

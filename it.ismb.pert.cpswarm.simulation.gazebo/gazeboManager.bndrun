@@ -93,6 +93,8 @@
 	ros.core.native=true,\
 	gazebo.launch=false,\
 	verbosity=2,\
+	maxNumber.carts=5,\
+	fitness.function=fitness.py,\
 	simulation.launch.file=gazebo.launch,\
 	ros.master.uri=http://localhost:11311,\
 	Manager.config.file.manager.xml=resources/manager.xml,\
