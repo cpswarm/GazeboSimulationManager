@@ -162,7 +162,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		boolean connected = connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, simulationManagerStatus, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile, fitnessFunction, maxNumberOfCarts);
 		if(connected) {
-			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, simulationManagerStatus, optimizationUser,
+			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
 		} else {
 			deactivate();				
@@ -170,7 +170,7 @@ public class GazeboSimulationManager extends SimulationManager {
 	}
 
 	public void publishPresence(final InetAddress serverURI, final String serverName, final String serverPassword,
-			final String dataFolder, final String rosFolder, final SimulationManagerStatus simulationManagerStatus, final String optimizationUser,
+			final String dataFolder, final String rosFolder, final String optimizationUser,
 			final String orchestratorUser, final String uuid, final boolean debug, final boolean monitoring,
 			final String mqttBroker, final int timeout) {
 		Properties props = new Properties();
@@ -211,7 +211,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		disco.addFeature("http://jabber.org/protocol/si/profile/file-transfer");
 		final Presence presence = new Presence(Presence.Type.available);
 		Gson gson = new Gson();
-		String statusToSend = gson.toJson(simulationManagerStatus, SimulationManagerStatus.class);
+		String statusToSend = gson.toJson(this.getSimulationManagerStatus(), SimulationManagerStatus.class);
 		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
 			System.out.println(" \n MA : the server info is " + statusToSend);
 		}		
