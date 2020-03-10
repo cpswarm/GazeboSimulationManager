@@ -6,7 +6,10 @@ RemoteSystemsTempFiles/
 *.git/
 **/generated/
 **/bin/
+<<<<<<< HEAD
 **/gazebo.bndrun
+=======
+>>>>>>> refs/remotes/origin/api2.0
 git.sh
 
 

@@ -15,8 +15,8 @@ import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.w3c.dom.Document;
 import com.google.gson.Gson;
 
-import messages.server.Capabilities;
-import messages.server.Server;
+import eu.cpswarm.optimization.statuses.SimulationManagerCapabilities;
+import eu.cpswarm.optimization.statuses.SimulationManagerStatus;
 import simulation.SimulationManager;
 import simulation.SimulationManager.VERBOSITY_LEVELS;
 
@@ -71,7 +71,7 @@ public class GazeboSimulationManager extends SimulationManager {
 		String fitnessFunction = null;
 		int maxNumberOfCarts = 0;
 
-		Server serverInfo = new Server();
+		SimulationManagerStatus simulationManagerStatus = null;
 		try {
 			if(context.getProperty("verbosity")!=null){
 				verbosity = context.getProperty("verbosity");
@@ -82,13 +82,49 @@ public class GazeboSimulationManager extends SimulationManager {
 			} else {
 				CURRENT_VERBOSITY_LEVEL = VERBOSITY_LEVELS.values()[verbosityI];
 			}
+<<<<<<< HEAD
 			if(context.getProperty("simulation.launch.file")!=null){
 				launchFile = context.getProperty("simulation.launch.file");
+=======
+			if(context.getProperty("launch.file")!=null){
+				launchFile = context.getProperty("launch.file");
 			}
 			if (launchFile == null) {
 				System.out.println("launchFile = null");
 				deactivate();
 			}
+			if(context.getProperty("fitness.function")!=null){
+				fitnessFunction = context.getProperty("fitness.function");
+			}
+			if (fitnessFunction == null) {
+				System.out.println("path of fitness function = null");
+				deactivate();
+			}
+			if(context.getProperty("maxNumber.carts")!=null){
+				maxNumberOfCarts = Integer.parseInt(context.getProperty("maxNumber.carts"));
+			}
+			if (maxNumberOfCarts == 0) {
+				System.out.println("the number of carts can not be 0");
+				deactivate();
+			}
+			
+			if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+				System.out.println("Instantiate a GazeboSimulationManager .....");
+>>>>>>> refs/remotes/origin/api2.0
+			}
+<<<<<<< HEAD
+			if (launchFile == null) {
+				System.out.println("launchFile = null");
+=======
+			
+			documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			String managerConfigFile = context.getProperty("Manager.config.file.manager.xml");
+			if (managerConfigFile == null) {
+				System.out.println("managerConfigFile = null");
+>>>>>>> refs/remotes/origin/api2.0
+				deactivate();
+			}
+<<<<<<< HEAD
 			if(context.getProperty("fitness.function")!=null){
 				fitnessFunction = context.getProperty("fitness.function");
 			}
@@ -112,6 +148,11 @@ public class GazeboSimulationManager extends SimulationManager {
 			Document document = null;
 			FileInputStream s = new FileInputStream(managerConfigFile);
 			document = documentBuilder.parse(s);
+=======
+			Document document = null;
+			FileInputStream s = new FileInputStream(managerConfigFile);
+			document = documentBuilder.parse(s);			
+>>>>>>> refs/remotes/origin/api2.0
 			serverURI = InetAddress.getByName(document.getElementsByTagName("serverURI").item(0).getTextContent());
 			serverName = document.getElementsByTagName("serverName").item(0).getTextContent();
 			serverPassword = document.getElementsByTagName("serverPassword").item(0).getTextContent();
@@ -125,12 +166,10 @@ public class GazeboSimulationManager extends SimulationManager {
 			if (document.getElementsByTagName("debug").getLength() != 0) {
 				debug = Boolean.parseBoolean(document.getElementsByTagName("debug").item(0).getTextContent());
 			}
-			Capabilities capabilities = new Capabilities();
-			capabilities
-					.setDimensions(Long.valueOf(document.getElementsByTagName("dimensions").item(0).getTextContent()));
-			capabilities
-					.setMaxAgents(Long.valueOf(document.getElementsByTagName("maxAgents").item(0).getTextContent()));
-			serverInfo.setCapabilities(capabilities);
+			int dimension = new Integer(document.getElementsByTagName("dimensions").item(0).getTextContent()).intValue();
+			int maxAgents = new Integer(document.getElementsByTagName("maxAgents").item(0).getTextContent()).intValue();
+			SimulationManagerCapabilities capabilities = new SimulationManagerCapabilities(dimension, maxAgents);
+			simulationManagerStatus = new SimulationManagerStatus(null, null, capabilities);
 			optimizationUser = document.getElementsByTagName("optimizationUser").item(0).getTextContent();
 			orchestratorUser = document.getElementsByTagName("orchestratorUser").item(0).getTextContent();
 			rosFolder = document.getElementsByTagName("rosFolder").item(0).getTextContent();
@@ -158,17 +197,30 @@ public class GazeboSimulationManager extends SimulationManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+<<<<<<< HEAD
 		boolean connected = connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile, fitnessFunction, maxNumberOfCarts);
 		if(connected) {
 			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, serverInfo, optimizationUser,
+=======
+		boolean connected = connectToXMPPserver(serverURI, serverName, serverPassword, dataFolder, rosFolder, simulationManagerStatus, optimizationUser,
+				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout, Boolean.FALSE, launchFile, fitnessFunction, maxNumberOfCarts);
+		if(connected) {
+			publishPresence(serverURI, serverName, serverPassword, dataFolder, rosFolder, optimizationUser,
+>>>>>>> refs/remotes/origin/api2.0
 				orchestratorUser, uuid, debug, monitoring, mqttBroker, timeout);
+<<<<<<< HEAD
 		} else
 			deactivate();
+=======
+		} else {
+			deactivate();				
+		}
+>>>>>>> refs/remotes/origin/api2.0
 	}
 
 	public void publishPresence(final InetAddress serverURI, final String serverName, final String serverPassword,
-			final String dataFolder, final String rosFolder, final Server serverInfo, final String optimizationUser,
+			final String dataFolder, final String rosFolder, final String optimizationUser,
 			final String orchestratorUser, final String uuid, final boolean debug, final boolean monitoring,
 			final String mqttBroker, final int timeout) {
 		Properties props = new Properties();
@@ -184,6 +236,39 @@ public class GazeboSimulationManager extends SimulationManager {
 		ProcessBuilder builder = null;
 		Process process = null;
 		boolean result = true;
+<<<<<<< HEAD
+=======
+		try {
+			builder = new ProcessBuilder(new String[] { "/bin/bash", "-c",
+					"source /opt/ros/kinetic/setup.bash; cd " + this.getCatkinWS() + " ; catkin build " });
+			builder.inheritIO();
+			process = builder.start();
+			process.waitFor();
+			if (CURRENT_VERBOSITY_LEVEL.equals(VERBOSITY_LEVELS.ALL)) {
+				System.out.println("build workspace finished");
+			}
+		} catch (IOException |InterruptedException err) {
+			result = false;
+			System.err.println("Error when building workspace: " + this.getCatkinWS());
+			err.printStackTrace();
+		} finally {
+			if (process != null) {
+				process.destroy();
+				process = null;
+			}
+		}
+		System.out.println("Compilation finished, with succeed = " + result);
+		if (result) {
+		ServiceDiscoveryManager disco = ServiceDiscoveryManager.getInstanceFor(this.getConnection());
+		disco.addFeature("http://jabber.org/protocol/si/profile/file-transfer");
+		final Presence presence = new Presence(Presence.Type.available);
+		Gson gson = new Gson();
+		String statusToSend = gson.toJson(this.getSimulationManagerStatus(), SimulationManagerStatus.class);
+		if(SimulationManager.CURRENT_VERBOSITY_LEVEL.equals(SimulationManager.VERBOSITY_LEVELS.ALL)) {
+			System.out.println(" \n MA : the server info is " + statusToSend);
+		}		
+		presence.setStatus(statusToSend);
+>>>>>>> refs/remotes/origin/api2.0
 		try {
 			builder = new ProcessBuilder(new String[] { "/bin/bash", "-c",
 					"source /opt/ros/kinetic/setup.bash; cd " + this.getCatkinWS() + " ; catkin build " });
@@ -218,6 +303,9 @@ public class GazeboSimulationManager extends SimulationManager {
 			} catch (final NotConnectedException | InterruptedException e) {
 				e.printStackTrace();
 			}
+		} else {
+			return;
+		}
 		} else {
 			return;
 		}

@@ -1,15 +1,11 @@
 package manager;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-
-import be.iminds.iot.ros.util.NativeRosNode.VERBOSITY_LEVELS;
 import simulation.SimulationManager;
 
 /**
@@ -21,6 +17,7 @@ import simulation.SimulationManager;
 @Component(factory = "it.ismb.pert.cpswarm.scriptLauncher.factory")
 public class ScriptLauncher implements Runnable {
 	private String catkinWS = null;
+	private boolean canRun = true;
 	private Process proc = null;
 
 	@Activate
@@ -45,6 +42,7 @@ public class ScriptLauncher implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	@Deactivate
@@ -61,6 +59,12 @@ public class ScriptLauncher implements Runnable {
 			}
 			proc = null;
 		}
+	}
+
+	public synchronized void setCanRun(boolean canRun) {
+		this.canRun = canRun;
+		if(!canRun)
+			deactivate();
 	}
 
 }
