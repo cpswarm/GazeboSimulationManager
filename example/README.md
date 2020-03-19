@@ -9,24 +9,19 @@ Similar steps are available for other OS and JDK versions.
         resources/
             manager.xml                -- Configuration file for connecting to XMPP server and simulation tool capability
         Dockerfile-Gazebo-Simulation   -- Dockerfile for creating the gazebo-simulation image
-        JVM-Certifivcation.pem         -- Certificate extracted from the XMPP server
+        XMPP-Certifivcation.pem         -- Certificate extracted from the XMPP server
         launch_SM.sh                   -- Script for launching the simulation manager
-        ws/
-            build.sh                   -- Script for compiling the ros simulation
-            global_variables.env       -- Configuration file for defining the global variables in simulation
-            src/
-                Ros-package-name/      -- Please put your Ros packages in this src folder
+        Gazebo-simulation-package/       -- This is the Ros packages folder
 ```
 
 
-The `example` folder provides an example about how to create a docker image based on above pre-build gazebo-simulation-manager image that will include the Ros packages which can be used to simulate and optimize it using the CPSwarm Simulation and Optimization Environment.
+The `example` folder provides an example about how to create a docker image based on above pre-build gazebo-simulation-manager:latest image that will include the Ros packages which can be used to simulate and optimize it using the CPSwarm Simulation and Optimization Environment.
 
-Before dockerizing the ros simulation package starting from the gazebo-simulation-manager image, follow the steps:
+Before containerizing the ros simulation package starting from the gazebo-simulation-manager image, follow the steps:
 
 1.  Change the configuration file `manager.xml` in `resources` folder according to the real use case. This file can be used to change some system parameters used by the Gazebo simulation manager to communicate with other components in the CPSWarm simulation environment.
-2.  If some envitonment variables will be used during compilation, must export variables also in `build.sh` file to make sure they are executed by a same process, because the definition in Dockerfile will not be effective, otherwise, skip this step. 
-3.  place the ros simulation packages in the `example/ws/src/` folder.
-4.  Replace the file `JVM-Certifivcation.pem` used in real case.
+3.  place the Gazebo simulation packages here in the `example` folder, it will be moved to an existing ros workspace `/home/catkin_ws/src/` folder coming from the `cpswarm/Gazebo-simulation-manager:latest` image.
+4.  Replace the file `XMPP-Certifivcation.pem` used in real case.
 5.  (If using default setting, skip this step) The `gazeboManager.jar` has some internal system properies already set inside for configuring its launching environment, so user can set individual System properties with the -D option for passing the command line parameters to override the properties listed below:
 
       ``` bash
@@ -66,4 +61,4 @@ Before dockerizing the ros simulation package starting from the gazebo-simulatio
 
    This can be done using the features provided by the Simulation and Optimization Orchestrator. To deploy the image that you have created you can use the file deployment_gazebo_example.json, changing the name of the container to be deployed in /template/spec/containers/image and the number of containers to be deployed in /spec/replicas. This snippet of code deploys beside the gazebo simulation image, also one service, it is needed to allow to access to the simulator GUI, through VNC. 
    Note 1: the format used is a simplified version of the one used to describe a Kubernetes deployment. If you don't want to use the SOO to deploy the images, but directly work on the Kubernetes API you have to use a different file.
-   Note 2: in the example, the containers have a node selector set in /template/spec/containers/nodeSelector, this allow to select the nodes in which it can be installed, for example in this case, it will be installed in all the nodes with the label component:stage (the label can be  add with the command: kubectl label node <node_to_be_labeled> component=gazebo). If nodeSelector is not used the image will be installed in one of the nodes of the cluster with enough resources to run it.
+   Note 2: in the example, the containers have a node selector set in /template/spec/containers/nodeSelector, this allow to select the nodes in which it can be installed, for example in this case, it will be installed in all the nodes with the label component:gazebo (the label can be  add with the command: kubectl label node <node_to_be_labeled> component=gazebo). If nodeSelector is not used the image will be installed in one of the nodes of the cluster with enough resources to run it.

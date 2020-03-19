@@ -1,20 +1,14 @@
-FROM gazebo-simulation-manager:latest
+FROM cpswarm/gazebo-simulation-manager:1.0.0
 
 WORKDIR $HOME
 
 COPY . $HOME
+RUN mv $HOME/Gazebo-simulation-package $HOME/catkin_ws/src/
 
-## chmod a+x for all bash scripts
-RUN $INST_SCRIPTS/set_user_permission.sh $HOME $HOME/ws
+WORKDIR $HOME/catkin_ws/
 
-WORKDIR $HOME/ws/
-
-RUN catkin init --workspace .
-
-RUN chmod +x build.sh
-
-RUN echo "source $HOME/ws/devel/setup.bash" >> ~/.bashrc \
-	 && echo "source $HOME/ws/global_variables.env" >> ~/.bashrc
+RUN /bin/bash -c "source /home/catkin_ws/devel/setup.bash \
+    && catkin build"
 
 WORKDIR $HOME
 
@@ -23,8 +17,8 @@ RUN mkdir cpswarm
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 RUN keytool -noprompt -importcert -trustcacerts \
-    -file <JVM-Certifivcation.pem> -alias <xmpp Server Name: pippo.pluto.it> \
+    -file <XMPP-Certifivcation.pem> -alias <xmpp Server Name: pippo.pluto.it> \
     -storepass changeit -keystore -J-Duser.language=en $JAVA_HOME/jre/lib/security/cacerts
 
-ENTRYPOINT ["/home/dockerstartup/vnc_startup.sh"]
-CMD ["--wait"]
+ENTRYPOINT ["/home/launch_SM.sh"]
+CMD []
